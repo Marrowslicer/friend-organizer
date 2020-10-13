@@ -4,6 +4,7 @@
     <Grid>
         <ListView Margin="10,10,0,10"
                   ItemsSource="{Binding Friends}"
+                  SelectedItem="{Binding SelectedFriend, Mode=TwoWay}"
                   DisplayMemberPath="DisplayMember">
         </ListView>
     </Grid>
