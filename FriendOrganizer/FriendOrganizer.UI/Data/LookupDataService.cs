@@ -9,21 +9,27 @@ using FriendOrganizer.Model;
 
 namespace FriendOrganizer.UI.Data
 {
-    public class FriendDataService : IFriendDataService
+    public class LookupDataService : IFriendLookupDataService
     {
         private Func<FriendOrganizerDbContext> m_contextCreator;
 
-        public FriendDataService(Func<FriendOrganizerDbContext> contextCreator)
+        public LookupDataService(Func<FriendOrganizerDbContext> contextCreator)
         {
             m_contextCreator = contextCreator;
         }
 
-        public async Task<Friend> GetByIdAsync(int friendId)
+        public async Task<IEnumerable<LookupItem>> GetFriendLookupAsync()
         {
             using (var context = m_contextCreator())
             {
                 return await context.Friends.AsNoTracking()
-                    .SingleAsync(f => f.Id == friendId);
+                    .Select(f =>
+                    new LookupItem
+                    {
+                        Id = f.Id,
+                        DisplayMember = f.FirstName + " " + f.LastName
+                    })
+                    .ToListAsync();
             }
         }
     }
