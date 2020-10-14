@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 using FriendOrganizer.Model;
 using FriendOrganizer.UI.Data;
 using FriendOrganizer.UI.Event;
 
+using Prism.Commands;
 using Prism.Events;
 
 namespace FriendOrganizer.UI.ViewModel
@@ -22,6 +25,27 @@ namespace FriendOrganizer.UI.ViewModel
 
             m_eventAggregator.GetEvent<OpenFriendDetailViewEvent>()
                 .Subscribe(OnOpenFriendDetailView);
+
+            SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
+        }
+
+        private async void OnSaveExecute()
+        {
+            await m_friendDataService.SaveAsync(Friend);
+
+            // Raise event (send message)
+            m_eventAggregator.GetEvent<AfterSaveFriendEvent>().Publish(
+                new AfterSaveFriendEventArgs
+                {
+                    Id = Friend.Id,
+                    DisplayMember = $"{Friend.FirstName} {Friend.LastName}"
+                });
+        }
+
+        private bool OnSaveCanExecute()
+        {
+            //TODO: Check if friend is valid
+            return true;
         }
 
         private Friend m_friend;
@@ -34,6 +58,8 @@ namespace FriendOrganizer.UI.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public ICommand SaveCommand { get; }
 
         public async Task LoadAsync(int friendId)
         {
