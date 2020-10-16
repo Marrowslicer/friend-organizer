@@ -40,6 +40,7 @@
                  Text="{Binding
                     Friend.Email,
                     Mode=TwoWay,
+                    TargetNullValue='',
                     UpdateSourceTrigger=PropertyChanged}"
                  Margin="10,0,10,10"/>
 
