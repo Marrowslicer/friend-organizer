@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using FriendOrganizer.UI.Data;
+using FriendOrganizer.UI.Data.Lookups;
 using FriendOrganizer.UI.Event;
 
 using Prism.Events;
@@ -34,23 +34,6 @@ namespace FriendOrganizer.UI.ViewModel
 
         public ObservableCollection<NavigationItemViewModel> Friends { get; }
 
-        private NavigationItemViewModel m_selectedFriend;
-        public NavigationItemViewModel SelectedFriend
-        {
-            get { return m_selectedFriend; }
-            set
-            {
-                m_selectedFriend = value;
-                OnPropertyChanged();
-
-                if (m_selectedFriend != null)
-                {
-                    m_eventAggregator.GetEvent<OpenFriendDetailViewEvent>()
-                        .Publish(m_selectedFriend.Id);
-                }
-            }
-        }
-
         public async Task LoadAsync()
         {
             var lookup = await m_friendLookupDataService.GetFriendLookupAsync();
@@ -58,7 +41,8 @@ namespace FriendOrganizer.UI.ViewModel
 
             foreach (var item in lookup)
             {
-                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember));
+                Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
+                    m_eventAggregator));
             }
         }
     }
