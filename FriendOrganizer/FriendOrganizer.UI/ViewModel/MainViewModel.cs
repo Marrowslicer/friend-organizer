@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows;
 
 using FriendOrganizer.UI.Event;
 using FriendOrganizer.UI.View.Services;
