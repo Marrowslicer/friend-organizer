@@ -29,5 +29,15 @@ namespace FriendOrganizer.UI.Data.Repositories
         {
             return m_context.ChangeTracker.HasChanges();
         }
+
+        public void Add(Friend friend)
+        {
+            m_context.Friends.Add(friend);
+        }
+
+        public void Remove(Friend friend)
+        {
+            m_context.Friends.Remove(friend);
+        }
     }
 }

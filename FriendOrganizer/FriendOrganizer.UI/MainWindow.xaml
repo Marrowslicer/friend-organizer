@@ -2,21 +2,44 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:view="clr-namespace:FriendOrganizer.UI.View"
+        xmlns:viewModel="clr-namespace:FriendOrganizer.UI.ViewModel"
         Title="Firend Organizer"
         Height="480"
         Width="768"
         FontSize="20"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModel:FriendDetailViewModel}">
+            <view:FriendDetailView/>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <view:NavigationView Grid.Column="0"
+        <Menu Grid.Row="0"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              FontSize="20">
+            <MenuItem Header="Create"
+                      Margin="5,0,0,0">
+                <MenuItem Header="New Friend"
+                          Command="{Binding CreateNewFriendCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <view:NavigationView Grid.Row="1"
+                             Grid.Column="0"
                              DataContext="{Binding NavigationViewModel}"/>
         
-        <view:FriendDetailView Grid.Column="1"
-                               DataContext="{Binding FriendDetailViewModel}"/>
+        <ContentControl Grid.Row="1"
+                        Grid.Column="1"
+                        Content="{Binding FriendDetailViewModel}"/>
     </Grid>
 </Window>

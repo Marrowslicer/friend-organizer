@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,13 +24,8 @@ namespace FriendOrganizer.UI.ViewModel
             Friends = new ObservableCollection<NavigationItemViewModel>();
 
             // Subscribe event (message)
-            m_eventAggregator.GetEvent<AfterSaveFriendEvent>().Subscribe(AfterFriendSaved);
-        }
-
-        private void AfterFriendSaved(AfterSaveFriendEventArgs friend)
-        {
-            var lookupItem = Friends.Single(f => f.Id == friend.Id);
-            lookupItem.DisplayMember = friend.DisplayMember;
+            m_eventAggregator.GetEvent<AfterFriendSavedEvent>().Subscribe(AfterFriendSaved);
+            m_eventAggregator.GetEvent<AfterFriendDeletedEvent>().Subscribe(AfterFriendDeleted);
         }
 
         public ObservableCollection<NavigationItemViewModel> Friends { get; }
@@ -43,6 +39,30 @@ namespace FriendOrganizer.UI.ViewModel
             {
                 Friends.Add(new NavigationItemViewModel(item.Id, item.DisplayMember,
                     m_eventAggregator));
+            }
+        }
+
+        private void AfterFriendSaved(AfterSaveFriendEventArgs friend)
+        {
+            var lookupItem = Friends.SingleOrDefault(f => f.Id == friend.Id);
+
+            if (lookupItem == null)
+            {
+                Friends.Add(new NavigationItemViewModel(friend.Id, friend.DisplayMember, m_eventAggregator));
+            }
+            else
+            {
+                lookupItem.DisplayMember = friend.DisplayMember;
+            }
+        }
+
+        private void AfterFriendDeleted(int friendId)
+        {
+            var friend = Friends.SingleOrDefault(f => f.Id == friendId);
+
+            if (friend != null)
+            {
+                Friends.Remove(friend);
             }
         }
     }

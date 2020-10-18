@@ -50,6 +50,10 @@
                     Width="125"
                     Margin="10"
                     Command="{Binding SaveCommand}"/>
+            <Button Content="Delete"
+                    Width="125"
+                    Margin="10"
+                    Command="{Binding DeleteCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>
