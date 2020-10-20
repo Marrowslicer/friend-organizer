@@ -24,6 +24,14 @@
                 new Friend { FirstName = "Roma", LastName = "Kleschik" },
                 new Friend { FirstName = "Artem", LastName = "Curikov" }
                 );
+            context.ProgrammingLanguages.AddOrUpdate(
+                l => l.Name,
+                new ProgrammingLanguage { Name = "C#" },
+                new ProgrammingLanguage { Name = "C++" },
+                new ProgrammingLanguage { Name = "C" },
+                new ProgrammingLanguage { Name = "Java" },
+                new ProgrammingLanguage { Name = "Python" }
+                );
         }
     }
 }
