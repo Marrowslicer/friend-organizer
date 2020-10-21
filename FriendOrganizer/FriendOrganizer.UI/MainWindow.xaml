@@ -4,8 +4,8 @@
         xmlns:view="clr-namespace:FriendOrganizer.UI.View"
         xmlns:viewModel="clr-namespace:FriendOrganizer.UI.ViewModel"
         Title="Firend Organizer"
-        Height="480"
-        Width="768"
+        Height="768"
+        Width="1248"
         FontSize="20"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>

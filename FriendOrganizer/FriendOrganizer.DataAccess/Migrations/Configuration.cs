@@ -1,6 +1,7 @@
 ﻿namespace FriendOrganizer.DataAccess.Migrations
 {
     using System.Data.Entity.Migrations;
+    using System.Linq;
 
     using FriendOrganizer.Model;
 
@@ -32,6 +33,12 @@
                 new ProgrammingLanguage { Name = "Java" },
                 new ProgrammingLanguage { Name = "Python" }
                 );
+
+            context.SaveChanges();
+
+            context.FriendPhoneNumbers.AddOrUpdate(
+                n => n.Number,
+                new FriendPhoneNumber { Number = "+375 44 5856254", FriendId = context.Friends.First().Id });
         }
     }
 }
