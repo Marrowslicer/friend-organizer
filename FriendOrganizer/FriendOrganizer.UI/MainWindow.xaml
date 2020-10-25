@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <Menu Grid.Row="0"
@@ -30,7 +30,8 @@
             <MenuItem Header="Create"
                       Margin="5,0,0,0">
                 <MenuItem Header="New Friend"
-                          Command="{Binding CreateNewFriendCommand}"/>
+                          Command="{Binding CreateNewDetailCommand}"
+                          CommandParameter="{x:Type viewModel:FriendDetailViewModel}"/>
             </MenuItem>
         </Menu>
 
@@ -40,6 +41,6 @@
         
         <ContentControl Grid.Row="1"
                         Grid.Column="1"
-                        Content="{Binding FriendDetailViewModel}"/>
+                        Content="{Binding DetailViewModel}"/>
     </Grid>
 </Window>

@@ -18,33 +18,29 @@ using Prism.Events;
 
 namespace FriendOrganizer.UI.ViewModel
 {
-    public class FriendDetailViewModel : ViewModelBase, IFriendDetailViewModel
+    public class FriendDetailViewModel : DetailViewModelBase, IFriendDetailViewModel
     {
         private IFriendRepository m_friendRepository;
-        private IEventAggregator m_eventAggregator;
         private IMessageDialogService m_messageDialogService;
         private IProgrammingLanguageLookupDataService m_programmingLanguageLookupDataService;
 
         private FriendWrapper m_friend;
         private FriendPhoneNumberWrapper m_selectedPhoneNumber;
-        private bool m_hasChanges;
 
         public FriendDetailViewModel(
             IFriendRepository friendRepository,
             IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService,
             IProgrammingLanguageLookupDataService programmingLanguageLookupDataService)
+            : base(eventAggregator)
         {
             m_friendRepository = friendRepository;
-            m_eventAggregator = eventAggregator;
             m_messageDialogService = messageDialogService;
             m_programmingLanguageLookupDataService = programmingLanguageLookupDataService;
 
             ProgrammingLanguages = new ObservableCollection<LookupItem>();
             PhoneNumbers = new ObservableCollection<FriendPhoneNumberWrapper>();
 
-            SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
-            DeleteCommand = new DelegateCommand(OnDeleteExecute);
             AddPhoneNumberCommand = new DelegateCommand(OnAddPhoneNumberExecute);
             RemovePhoneNumberCommand = new DelegateCommand(OnRemovePhoneNumberExecute, OnRemovePhoneNumberCanExecute);
         }
@@ -52,10 +48,6 @@ namespace FriendOrganizer.UI.ViewModel
         public ObservableCollection<LookupItem> ProgrammingLanguages { get; }
 
         public ObservableCollection<FriendPhoneNumberWrapper> PhoneNumbers { get; }
-
-        public ICommand SaveCommand { get; }
-
-        public ICommand DeleteCommand { get; }
 
         public ICommand AddPhoneNumberCommand { get; }
 
@@ -82,21 +74,7 @@ namespace FriendOrganizer.UI.ViewModel
             }
         }
 
-        public bool HasChanges
-        {
-            get { return m_hasChanges; }
-            set
-            {
-                if (m_hasChanges != value)
-                {
-                    m_hasChanges = value;
-                    OnPropertyChanged();
-                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-                }
-            }
-        }
-
-        public async Task LoadAsync(int? friendId)
+        public override async Task LoadAsync(int? friendId)
         {
             var friend = friendId.HasValue
                 ? await m_friendRepository.GetByIdAsync(friendId.Value)
@@ -175,22 +153,14 @@ namespace FriendOrganizer.UI.ViewModel
             }
         }
 
-        private async void OnSaveExecute()
+        protected override async void OnSaveExecute()
         {
             await m_friendRepository.SaveAsync();
-
             HasChanges = m_friendRepository.HasChanges();
-
-            // Raise event (send message)
-            m_eventAggregator.GetEvent<AfterFriendSavedEvent>().Publish(
-                new AfterSaveFriendEventArgs
-                {
-                    Id = Friend.Id,
-                    DisplayMember = $"{Friend.FirstName} {Friend.LastName}"
-                });
+            RaiseDetailSavedEvent(Friend.Id, $"{Friend.FirstName} {Friend.LastName}");
         }
 
-        private bool OnSaveCanExecute()
+        protected override bool OnSaveCanExecute()
         {
             return Friend != null
                 && !Friend.HasErrors
@@ -198,7 +168,7 @@ namespace FriendOrganizer.UI.ViewModel
                 && HasChanges;
         }
 
-        private async void OnDeleteExecute()
+        protected override async void OnDeleteExecute()
         {
             var result = m_messageDialogService
                 .ShowOkCancelDialog($"Do you really want to delete the friend {Friend.FirstName} {Friend.LastName}?",
@@ -208,7 +178,7 @@ namespace FriendOrganizer.UI.ViewModel
             {
                 m_friendRepository.Remove(Friend.Model);
                 await m_friendRepository.SaveAsync();
-                m_eventAggregator.GetEvent<AfterFriendDeletedEvent>().Publish(Friend.Id);
+                RaiseDetailDeletedEvent(Friend.Id);
             }
         }
 
