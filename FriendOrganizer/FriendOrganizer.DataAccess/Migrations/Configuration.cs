@@ -1,5 +1,7 @@
 ﻿namespace FriendOrganizer.DataAccess.Migrations
 {
+    using System;
+    using System.Collections.Generic;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
@@ -20,10 +22,10 @@
             //  to avoid creating duplicate seed data.
             context.Friends.AddOrUpdate(
                 f => f.FirstName,
-                new Friend { FirstName = "Stas", LastName = "Kazakov" },
-                new Friend { FirstName = "Olga", LastName = "Kazakova" },
-                new Friend { FirstName = "Roma", LastName = "Kleschik" },
-                new Friend { FirstName = "Artem", LastName = "Curikov" }
+                new Friend { FirstName = "Станислав", LastName = "Казаков" },
+                new Friend { FirstName = "Ольга", LastName = "Казакова" },
+                new Friend { FirstName = "Роман", LastName = "Клещик" },
+                new Friend { FirstName = "Артем", LastName = "Цуриков" }
                 );
             context.ProgrammingLanguages.AddOrUpdate(
                 l => l.Name,
@@ -39,6 +41,20 @@
             context.FriendPhoneNumbers.AddOrUpdate(
                 n => n.Number,
                 new FriendPhoneNumber { Number = "+375 44 5856254", FriendId = context.Friends.First().Id });
+
+            context.Meetings.AddOrUpdate(
+                m => m.Title,
+                new Meeting
+                {
+                    Title = "Смотреть футбол",
+                    DateFrom = new DateTime(2020, 10, 25),
+                    DateTo = new DateTime(2020, 10, 25),
+                    Friends = new List<Friend>
+                    {
+                        context.Friends.Single(f => f.FirstName == "Роман" && f.LastName == "Клещик"),
+                        context.Friends.Single(f => f.FirstName == "Артем" && f.LastName == "Цуриков")
+                    }
+                });
         }
     }
 }
